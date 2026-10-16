@@ -1,5 +1,6 @@
 package com.apress.spring;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+@Entity
 public class PromedioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +26,8 @@ public class PromedioEntity {
 
 
     public PromedioEntity(Double preciomediares, Double kilosmediares, String date) {
-        this.preciomediares=preciomediares;
-        this.kilosmediares=kilosmediares;
+        this.preciomediares = preciomediares;
+        this.kilosmediares = kilosmediares;
         try {
             this.fechadecreacion = miformato.parse(date);
 
@@ -62,8 +64,7 @@ public class PromedioEntity {
     public Date getCreated() {
         return fechadecreacion;
     }
-    public void setCreated(Date fechadecreacion) { this.fechadecreacion = fechadecreacion;
+    public void setCreated(Date fechadecreacion) { 
+        this.fechadecreacion = fechadecreacion;
     }
-
-
 }
