@@ -15,9 +15,13 @@ import java.util.Optional;
 @RequestMapping("/api")
 public class HelloController {
     private final CourseRepository courseRepository;
+    private final PromedioRepository promedioRepository;
 
-    public HelloController(CourseRepository courseRepository) {
+    public HelloController(CourseRepository courseRepository,PromedioRepository promedioRepository) {
+
         this.courseRepository = courseRepository;
+        this.promedioRepository = promedioRepository;
+
     }
 
     // GET /api/cursos → lista todos los cursos
@@ -55,6 +59,25 @@ public class HelloController {
         );
         return ResponseEntity.ok(response);
     }
+
+    // GET /api/promedios → lista todos los promedios
+    @GetMapping("/promedios")
+    public ResponseEntity<List<PromedioResponse>> getAllPromedios(@AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getSubject();
+        System.out.println("Usuario autenticado: " + username);
+
+        List<PromedioEntity> promedios = promedioRepository.findAll();
+
+        List<PromedioResponse> responses = promedios.stream()
+                .map(promedio -> toPromedioResponse(promedio, HttpStatus.OK.value(), "Promedio obtenido correctamente", null))
+                .toList();
+
+        return ResponseEntity.ok(responses);
+    }
+
+
+
+
 
 
     // POST /api/cursos → crea un curso nuevo
@@ -94,6 +117,30 @@ public class HelloController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
+
+    // POST /api/promedios → crea un nuevo promedio
+    @PostMapping("/promedios")
+    public ResponseEntity<PromedioResponse> createPromedio(@RequestBody PromedioRequest request, @AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getSubject();
+        System.out.println("Usuario autenticado: " + username);
+
+        // Mapeamos los datos del Request a la Entidad
+        PromedioEntity promedio = new PromedioEntity();
+        promedio.setPreciomediares(request.getPreciomediares());
+        promedio.setNovillokg(request.getNovillokg());
+        promedio.setTotalkg(request.getTotalkg());
+        promedio.setCreated(request.getCreated());
+
+        // Guardamos en la base de datos
+        PromedioEntity savedPromedio = promedioRepository.save(promedio);
+
+        // Convertimos a Response usando el método auxiliar
+        PromedioResponse response = toPromedioResponse(savedPromedio, HttpStatus.CREATED.value(), "Promedio creado correctamente", null);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+
 
     // DELETE /api/cursos/{id}
     @DeleteMapping("/cursos/{id}")
@@ -211,6 +258,22 @@ public class HelloController {
                 toCourseResponse(curso, HttpStatus.OK.value(), "Link eliminado correctamente", null)
         );
     }
+
+    private PromedioResponse toPromedioResponse(PromedioEntity promedio, int status, String message, String error) {
+        PromedioResponse response = new PromedioResponse();
+        response.setStatus(status);
+        response.setMessage(message);
+        response.setError(error);
+
+        response.setId(promedio.getId());
+        response.setPreciomediares(promedio.getPreciomediares());
+        response.setNovillokg(promedio.getNovillokg());
+        response.setTotalkg(promedio.getTotalkg());
+        response.setCreated(promedio.getCreated());
+
+        return response;
+    }
+
 
     private CourseResponse toCourseResponse(CourseEntity curso, int status, String message, String error) {
         List<LinkResponse> linkResponses = (curso.getLinks() == null ? List.<LinkResponse>of() :

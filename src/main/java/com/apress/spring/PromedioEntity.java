@@ -17,17 +17,21 @@ public class PromedioEntity {
     private Long id;
 
     private Double preciomediares;
-    private Double kilosmediares;
+    private Double novillokg; //kg de la mediares
+    private Double totalkg; //kg de la mediares utilizables
+
 
     private Date fechadecreacion;
+
+    //costo real : preciomediares / totalkg
 
     @Transient
     private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
 
 
-    public PromedioEntity(Double preciomediares, Double kilosmediares, String date) {
+    public PromedioEntity(Double preciomediares, Double novillokg, String date) {
         this.preciomediares = preciomediares;
-        this.kilosmediares = kilosmediares;
+        this.novillokg = novillokg;
         try {
             this.fechadecreacion = miformato.parse(date);
 
@@ -54,12 +58,23 @@ public class PromedioEntity {
         this.preciomediares = preciomediares;
     }
 
-    public Double getKilosmediares() {
-        return kilosmediares;
+    public Double getNovillokg() {
+        return novillokg;
     }
-    public void setKilosmediares(Double kilosmediares) {
-        this.kilosmediares = kilosmediares;
+    public void setNovillokg(Double novillokg) {
+        this.novillokg = novillokg;
     }
+
+    public Double getTotalkg() {
+        return totalkg;
+    }
+    public void setTotalkg(Double totalkg) {
+        this.totalkg = totalkg;
+    }
+
+    //costo real : preciomediares / totalkg
+    public Double getCostoreal() { return (preciomediares/totalkg); }
+
 
     public Date getCreated() {
         return fechadecreacion;
