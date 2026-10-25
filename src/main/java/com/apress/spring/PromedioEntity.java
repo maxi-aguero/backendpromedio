@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
+@Table(name = "promedio")
 public class PromedioEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +25,11 @@ public class PromedioEntity {
 
     @Transient
     private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
-
+   
+    // Relación de Maestro-Detalle (Un promedio tiene muchos cortes)
+    @OneToMany(mappedBy = "promedio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CorteEntity> cortes = new ArrayList<>();
+    
     public PromedioEntity(Double preciomediares, Double novillokg, String date) {
         this.preciomediares = preciomediares;
         this.novillokg = novillokg;
@@ -37,7 +42,18 @@ public class PromedioEntity {
 
     public PromedioEntity() {
     }
+    
+    // Métodos auxiliares para manejar los cortes cómodamente
+    public void addCorte(CorteEntity corte) {
+        cortes.add(corte);
+        corte.setPromedio(this);
+    }
 
+    public void removeCorte(CorteEntity corte) {
+        cortes.remove(corte);
+        corte.setPromedio(null);
+    }
+    
     public Long getId() {
         return id;
     }
@@ -80,6 +96,13 @@ public class PromedioEntity {
     public Double getTotalcompra() {
         return (getCostoreal()*totalkg);
     }
+    
+    public List<CorteEntity> getCortes() {
+        return cortes;
+    }
 
+    public void setCortes(List<CorteEntity> cortes) {
+        this.cortes = cortes;
+    }
 
 }
