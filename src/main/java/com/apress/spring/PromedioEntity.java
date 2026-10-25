@@ -78,7 +78,7 @@ public class PromedioEntity {
     }
 
     public Double getTotalcompra() {
-        return (preciomediares*totalkg);
+        return (getCostoreal()*totalkg);
     }
 
 
