@@ -75,7 +75,32 @@ public class HelloController {
         return ResponseEntity.ok(responses);
     }
 
+// GET /api/promedios/{id} → obtiene un promedio por su ID
+    @GetMapping("/promedios/{id}")
+    public ResponseEntity<PromedioResponse> getPromedioById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        String username = jwt.getSubject();
+        System.out.println("Usuario autenticado: " + username);
 
+        Optional<PromedioEntity> promedioOpt = promedioRepository.findById(id);
+        
+        if (promedioOpt.isEmpty()) {
+            PromedioResponse errorResponse = new PromedioResponse();
+            errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+            errorResponse.setError("Not Found");
+            errorResponse.setMessage("Promedio no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+
+        PromedioEntity promedio = promedioOpt.get();
+        PromedioResponse response = toPromedioResponse(
+                promedio,
+                HttpStatus.OK.value(),
+                "Promedio obtenido correctamente",
+                null
+        );
+        
+        return ResponseEntity.ok(response);
+    }
 
 
 
