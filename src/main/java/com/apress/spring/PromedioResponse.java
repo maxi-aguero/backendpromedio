@@ -17,7 +17,7 @@ public class PromedioResponse {
     private Double totalkg; //kg de la mediares utilizables
 
 
-    private Date fechadecreacion;
+    private Date created;
     @Transient
     private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -28,7 +28,7 @@ public class PromedioResponse {
         this.preciomediares = preciomediares;
         this.novillokg = novillokg;
         try {
-            this.fechadecreacion = miformato.parse(date);
+            this.created = miformato.parse(date);
 
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -70,15 +70,17 @@ public class PromedioResponse {
         this.totalkg = totalkg;
     }
 
-    //costo real : preciomediares / totalkg
-    public Double getCostoreal() { return (preciomediares/totalkg); }
-
+   // Costo real seguro contra nulos o división por cero
+    public Double getCostoreal() { 
+        if (preciomediares == null || totalkg == null || totalkg == 0.0) return 0.0;
+        return (preciomediares / totalkg); 
+    }
 
     public Date getCreated() {
-        return fechadecreacion;
+        return created;
     }
-    public void setCreated(Date fechadecreacion) {
-        this.fechadecreacion = fechadecreacion;
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
 
