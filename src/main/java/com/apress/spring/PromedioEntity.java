@@ -1,35 +1,32 @@
 package com.apress.spring;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
-
+import jakarta.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "promedio")
 public class PromedioEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Double preciomediares;
-    private Double novillokg; // kg de la mediares
-    private Double totalkg; // kg de la mediares utilizables
+    private Double novillokg; 
+    private Double totalkg; 
 
     private Date created;
 
     @Transient
     private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
-   
-    // Relación de Maestro-Detalle (Un promedio tiene muchos cortes)
+
     @OneToMany(mappedBy = "promedio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CorteEntity> cortes = new ArrayList<>();
-    
+
     public PromedioEntity(Double preciomediares, Double novillokg, String date) {
         this.preciomediares = preciomediares;
         this.novillokg = novillokg;
@@ -42,8 +39,7 @@ public class PromedioEntity {
 
     public PromedioEntity() {
     }
-    
-    // Métodos auxiliares para manejar los cortes cómodamente
+
     public void addCorte(CorteEntity corte) {
         cortes.add(corte);
         corte.setPromedio(this);
@@ -53,56 +49,37 @@ public class PromedioEntity {
         cortes.remove(corte);
         corte.setPromedio(null);
     }
-    
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public Double getPreciomediares() {
-        return preciomediares;
-    }
-    public void setPreciomediares(Double preciomediares) {
-        this.preciomediares = preciomediares;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Double getNovillokg() {
-        return novillokg;
-    }
-    public void setNovillokg(Double novillokg) {
-        this.novillokg = novillokg;
-    }
+    public Double getPreciomediares() { return preciomediares; }
+    public void setPreciomediares(Double preciomediares) { this.preciomediares = preciomediares; }
 
-    public Double getTotalkg() {
-        return totalkg;
-    }
-    public void setTotalkg(Double totalkg) {
-        this.totalkg = totalkg;
-    }
+    public Double getNovillokg() { return novillokg; }
+    public void setNovillokg(Double novillokg) { this.novillokg = novillokg; }
+
+    public Double getTotalkg() { return totalkg; }
+    public void setTotalkg(Double totalkg) { this.totalkg = totalkg; }
 
     public Double getCostoreal() { 
+        if (preciomediares == null || novillokg == null || totalkg == null || totalkg == 0.0) {
+            return 0.0;
+        }
         return (preciomediares * novillokg) / totalkg;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-    public void setCreated(Date created) {
-        this.created = created;
+    public Date getCreated() { return created; }
+    public void setCreated(Date created) { this.created = created; }
+
+    public Double getTotalcompra() { 
+        Double costo = getCostoreal();
+        if (costo == null || totalkg == null) {
+            return 0.0;
+        }
+        return costo * totalkg;
     }
 
-    public Double getTotalcompra() {
-        return (getCostoreal()*totalkg);
-    }
-    
-    public List<CorteEntity> getCortes() {
-        return cortes;
-    }
-
-    public void setCortes(List<CorteEntity> cortes) {
-        this.cortes = cortes;
-    }
-
+    public List<CorteEntity> getCortes() { return cortes; }
+    public void setCortes(List<CorteEntity> cortes) { this.cortes = cortes; }
 }
