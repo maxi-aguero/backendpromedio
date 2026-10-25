@@ -52,8 +52,8 @@ public class PromedioRequest {
     }
 
     public Double getCostoreal() { 
-        if (preciomediares == null || totalkg == null || totalkg == 0.0) return 0.0;
-        return (preciomediares / totalkg); 
+    if (preciomediares == null || novillokg == null || totalkg == null || totalkg == 0.0) return 0.0;
+    return (preciomediares * novillokg) / totalkg; 
     }
 
     public Date getCreated() {
