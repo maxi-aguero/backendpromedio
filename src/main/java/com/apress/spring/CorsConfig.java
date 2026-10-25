@@ -14,7 +14,10 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // todas las rutas
-                        .allowedOrigins("http://localhost:5173") // tu frontend React (Vite)
+                        .allowedOrigins(
+                            "http://localhost:5173", 
+                            "https://frontendpromedio.onrender.com"
+                        ) // Permite local y producción
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
