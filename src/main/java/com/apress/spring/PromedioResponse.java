@@ -82,7 +82,7 @@ public class PromedioResponse {
     }
 
     public Double getTotalcompra() {
-        return (preciomediares*totalkg);
+        return (getCostoreal()*totalkg);
     }
 
 
