@@ -71,8 +71,7 @@ public class PromedioResponse {
     }
 
     public Double getCostoreal() { 
-    if (preciomediares == null || novillokg == null || totalkg == null || totalkg == 0.0) return 0.0;
-    return (preciomediares * novillokg) / totalkg; 
+    return (preciomediares * novillokg) / totalkg;
     }
     
     public Date getCreated() {
@@ -80,6 +79,10 @@ public class PromedioResponse {
     }
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public Double getTotalcompra() {
+        return (preciomediares*totalkg);
     }
 
 
