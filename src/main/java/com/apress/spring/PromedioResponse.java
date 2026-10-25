@@ -1,10 +1,10 @@
 package com.apress.spring;
 
-import jakarta.persistence.Transient;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 public class PromedioResponse {
     private Integer status;
@@ -13,13 +13,12 @@ public class PromedioResponse {
 
     private Long id;
     private Double preciomediares;
-    private Double novillokg; //kg de la mediares
-    private Double totalkg; //kg de la mediares utilizables
-
-
+    private Double novillokg; // kg de la mediares
+    private Double totalkg;   // kg de la mediares utilizables
     private Date created;
-    @Transient
-    private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
+
+    // Lista de cortes para enviar el desglose hacia React
+    private List<CorteResponse> cortes;
 
     public PromedioResponse() {
     }
@@ -27,14 +26,16 @@ public class PromedioResponse {
     public PromedioResponse(Double preciomediares, Double novillokg, String date) {
         this.preciomediares = preciomediares;
         this.novillokg = novillokg;
-        try {
-            this.created = miformato.parse(date);
-
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        if (date != null && !date.isEmpty()) {
+            SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
+            miformato.setTimeZone(TimeZone.getTimeZone("UTC"));
+            try {
+                this.created = miformato.parse(date);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
-
 
     // Getters y setters
     public Integer getStatus() { return status; }
@@ -70,8 +71,8 @@ public class PromedioResponse {
         this.totalkg = totalkg;
     }
 
-    public Double getCostoreal() { 
-    return (preciomediares * novillokg) / totalkg;
+    public Double getCostoreal() {  
+        return (preciomediares * novillokg) / totalkg;
     }
     
     public Date getCreated() {
@@ -82,8 +83,15 @@ public class PromedioResponse {
     }
 
     public Double getTotalcompra() {
-        return (getCostoreal()*totalkg);
+        Double costo = getCostoreal();
+        return costo * totalkg;
     }
 
+    public List<CorteResponse> getCortes() {
+        return cortes;
+    }
 
+    public void setCortes(List<CorteResponse> cortes) {
+        this.cortes = cortes;
+    }
 }
