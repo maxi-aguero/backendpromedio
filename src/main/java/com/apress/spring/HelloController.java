@@ -164,7 +164,28 @@ public class HelloController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    
+    // DELETE /api/promedios/{id}
+    @DeleteMapping("/promedios/{id}")
+    public ResponseEntity<PromedioResponse> deletePromedio(@AuthenticationPrincipal Jwt jwt,
+                                                         @PathVariable Long id) {
+        String username = jwt.getSubject();
 
+        return promedioRepository.findById(id)
+                .map(promedio -> {
+                    promedioRepository.deleteById(id);
+                    return ResponseEntity.ok(
+                            toPromedioResponse(promedio, HttpStatus.OK.value(), "Promedio eliminado con éxito", null)
+                    );
+                })
+                .orElseGet(() -> {
+                    PromedioResponse errorResponse = new PromedioResponse();
+                    errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+                    errorResponse.setError("Not Found");
+                    errorResponse.setMessage("Promedio no encontrado");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                });
+    }
 
 
     // DELETE /api/cursos/{id}
