@@ -187,6 +187,34 @@ public class HelloController {
                 });
     }
 
+    // PUT /api/promedios/{id}
+    @PutMapping("/promedios/{id}")
+    public ResponseEntity<PromedioResponse> updatePromedio(@AuthenticationPrincipal Jwt jwt,
+                                                         @PathVariable Long id,
+                                                         @RequestBody PromedioRequest request) {
+        String username = jwt.getSubject();
+
+        return promedioRepository.findById(id)
+                .map(promedio -> {
+                    // Actualizas los campos permitidos con los datos que vienen del request
+                    promedio.setPreciomediares(request.getPreciomediares());
+                    promedio.setNovillokg(request.getNovillokg());
+                    // ... otros campos que quieras actualizar ...
+                    
+                    PromedioEntity promedioActualizado = promedioRepository.save(promedio);
+                    
+                    return ResponseEntity.ok(
+                            toPromedioResponse(promedioActualizado, HttpStatus.OK.value(), "Promedio actualizado con éxito", null)
+                    );
+                })
+                .orElseGet(() -> {
+                    PromedioResponse errorResponse = new PromedioResponse();
+                    errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+                    errorResponse.setError("Not Found");
+                    errorResponse.setMessage("Promedio no encontrado para actualizar");
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                });
+    }
 
     // DELETE /api/cursos/{id}
     @DeleteMapping("/cursos/{id}")
