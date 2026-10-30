@@ -1,19 +1,14 @@
 package com.apress.spring;
 
-import jakarta.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "promedio")
 public class PromedioEntity {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id; // En Firestore los IDs de documentos suelen ser String
 
     private Double preciomediares;
     private Double novillokg; 
@@ -21,15 +16,13 @@ public class PromedioEntity {
 
     private Date created;
 
-    @Transient
-    private final SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
-
-    @OneToMany(mappedBy = "promedio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CorteEntity> cortes = new ArrayList<>();
 
+    // Constructor con parámetros
     public PromedioEntity(Double preciomediares, Double novillokg, String date) {
         this.preciomediares = preciomediares;
         this.novillokg = novillokg;
+        SimpleDateFormat miformato = new SimpleDateFormat("MM/dd/yyyy");
         try {
             this.created = miformato.parse(date);
         } catch (ParseException e) {
@@ -37,21 +30,21 @@ public class PromedioEntity {
         }
     }
 
+    // Constructor vacío obligatorio para que Firestore pueda mapear los datos automáticamente
     public PromedioEntity() {
     }
 
     public void addCorte(CorteEntity corte) {
         cortes.add(corte);
-        corte.setPromedio(this);
     }
 
     public void removeCorte(CorteEntity corte) {
         cortes.remove(corte);
-        corte.setPromedio(null);
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters y Setters (Cambiamos Long id por String id)
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public Double getPreciomediares() { return preciomediares; }
     public void setPreciomediares(Double preciomediares) { this.preciomediares = preciomediares; }
