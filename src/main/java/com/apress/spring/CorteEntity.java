@@ -1,26 +1,18 @@
 package com.apress.spring;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "cortes_promedio")
 public class CorteEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id; // Opcional, por si Firestore u vos le asignan un ID
 
     private String producto; // Ej: "Asado", "Vacío", "Entraña"
     private Double kg;       // Cantidad de kilos de este corte
     private Double precioKg; // Precio por kilo de este corte
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "promedio_id")
-    private PromedioEntity promedio;
-
+    // Constructor vacío (Obligatorio para Firestore)
     public CorteEntity() {
     }
 
+    // Constructor con parámetros
     public CorteEntity(String producto, Double kg, Double precioKg) {
         this.producto = producto;
         this.kg = kg;
@@ -28,11 +20,11 @@ public class CorteEntity {
     }
 
     // Getters y Setters
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -60,11 +52,6 @@ public class CorteEntity {
         this.precioKg = precioKg;
     }
 
-    public PromedioEntity getPromedio() {
-        return promedio;
-    }
-
-    public void setPromedio(PromedioEntity promedio) {
-        this.promedio = promedio;
-    }
+    // Nota: Ya no necesitamos getPromedio() / setPromedio() 
+    // porque la lista de cortes vive adentro de PromedioEntity.
 }
